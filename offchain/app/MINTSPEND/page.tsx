@@ -207,7 +207,7 @@ export default function Home() {
         <div className="w-full max-w-7xl flex gap-12 items-start">
           {/* Left Side - Image Display */}
           <div className="flex-1 flex flex-col gap-6">
-            <div className="aspect-square bg-white/5 rounded-2xl border border-white/10 flex justify-center items-center p-4 relative overflow-hidden shadow-2xl">
+            <div className="h-[558px] bg-white/5 rounded-2xl border border-white/10 flex justify-center items-center p-4 relative overflow-hidden shadow-2xl">
               {isLoading && (
                 <CircularProgress
                   size="lg"
