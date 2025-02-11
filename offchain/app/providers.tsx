@@ -12,11 +12,8 @@ export interface ProvidersProps {
   themeProps?: ThemeProviderProps;
 }
 
-declare module "@react-types/shared" {
-  interface RouterConfig {
-    routerOptions: NonNullable<Parameters<ReturnType<typeof useRouter>["push"]>[1]>;
-  }
-}
+// Define router options type locally instead of augmenting module
+type RouterOptions = NonNullable<Parameters<ReturnType<typeof useRouter>["push"]>[1]>;
 
 export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();

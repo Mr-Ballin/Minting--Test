@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
-import { Select, SelectItem } from "@heroui/select";
+import { Select, SelectItem } from "@nextui-org/react";
 
 import { Action } from "@/types/action";
 
@@ -36,7 +36,13 @@ export default function Cip68(props: { onMint: Action; onUpdate: Action; imageUr
           Mint
         </Button>
 
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
+        <Modal 
+          isOpen={isOpen} 
+          onOpenChange={onOpenChange}
+          placement="top-center"
+          isDismissable={false}
+          hideCloseButton={false}
+        >
           <ModalContent>
             {(onClose: () => void) => (
               <>
@@ -52,13 +58,22 @@ export default function Cip68(props: { onMint: Action; onUpdate: Action; imageUr
                   />
                   <Select
                     label="Token type"
-                    placeholder="NFT"
-                    variant="bordered"
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTokenLabel(e.target.value ? parseInt(e.target.value) : 222)}
+                    placeholder="Select token type"
+                    className="max-w-xs"
+                    defaultSelectedKeys={["222"]}
+                    selectionMode="single"
+                    selectedKeys={[label.toString()]}
+                    onSelectionChange={(keys) => {
+                      const value = Array.from(keys)[0] as string;
+                      if (value) {
+                        console.log("Token type selected:", value);
+                        setTokenLabel(parseInt(value));
+                      }
+                    }}
                   >
-                    <SelectItem key={222}>NFT</SelectItem>
-                    <SelectItem key={333}>FT</SelectItem>
-                    <SelectItem key={444}>RFT</SelectItem>
+                    <SelectItem key="222" value="222">NFT</SelectItem>
+                    <SelectItem key="333" value="333">FT</SelectItem>
+                    <SelectItem key="444" value="444">RFT</SelectItem>
                   </Select>
                   <Input
                     type="number"

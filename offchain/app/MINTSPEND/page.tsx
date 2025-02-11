@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, CircularProgress } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import { Button } from "@heroui/button";
+import { CircularProgress } from "@heroui/progress";
 import Dashboard from "@/components/Dashboard2";
 import { Address, Koios, Lucid, LucidEvolution } from "@lucid-evolution/lucid";
 import { Wallet } from "@/types/cardano";
@@ -70,7 +72,6 @@ export default function Home() {
     }
   };
 
-  //#region helper functions
   function handleError(error: any) {
     const { info, message } = error;
     const errorMessage = `${message}`;
@@ -137,25 +138,9 @@ export default function Home() {
       handleError(error);
     }
   }
-  //#endregion
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      width: '100%',
-      margin: 0,
-      padding: 0,
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: 'linear-gradient(135deg, #000000, #111111)',
-      color: 'white',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden'
-    }}>
+    <div className="min-h-screen w-full m-0 p-0 absolute inset-0 bg-gradient-to-br from-black to-gray-900 text-white flex flex-col overflow-hidden">
       <HoneycombPattern position="left" baseColor="#3b82f6" />
       <HoneycombPattern position="right" baseColor="#9333ea" />
 
@@ -171,44 +156,14 @@ export default function Home() {
       }} />
 
       {/* Header */}
-      <header style={{
-        padding: '1.5rem 2rem',
-        width: '100%',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        position: 'relative',
-        zIndex: '2'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          width: '100%'
-        }}>
-          <h1 style={{
-            fontSize: '1.8rem',
-            fontWeight: '700',
-            margin: 0,
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'center'
-          }}>
-            <Link href="/" style={{ textDecoration: 'none', display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{
-                background: 'linear-gradient(to right, #9333ea, #ec4899)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
+      <header className="p-6 w-full border-b border-white/10 backdrop-blur relative z-10">
+        <div className="flex items-center justify-between gap-2 w-full">
+          <h1 className="text-3xl font-bold m-0 flex gap-2 items-center">
+            <Link href="/" className="no-underline flex gap-2 items-center">
+              <span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
                 AIKEN
               </span>
-              <span style={{
-                background: 'linear-gradient(to right, #3b82f6, #7dd3fc)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>
+              <span className="bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
                 MINT AI
               </span>
             </Link>
@@ -225,7 +180,7 @@ export default function Home() {
                   Connect Wallet
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Available Wallets">
+              <DropdownMenu>
                 {wallets.map((wallet) => (
                   <DropdownItem 
                     key={wallet.name}
@@ -240,10 +195,7 @@ export default function Home() {
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <span style={{
-              fontSize: '0.9rem',
-              color: 'rgba(255, 255, 255, 0.7)'
-            }}>
+            <span className="text-sm text-white/70">
               Connected: {address.slice(0, 8)}...{address.slice(-8)}
             </span>
           )}
@@ -251,179 +203,53 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main style={{
-        flex: '1',
-        width: '100%',
-        padding: '2rem',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        position: 'relative',
-        zIndex: '2'
-      }}>
-        <div style={{
-          width: '100%',
-          maxWidth: '1200px',
-          display: 'flex',
-          gap: '3rem',
-          alignItems: 'flex-start'
-        }}>
+      <main className="flex-1 w-full p-8 flex justify-center items-start relative z-10">
+        <div className="w-full max-w-7xl flex gap-12 items-start">
           {/* Left Side - Image Display */}
-          <div style={{
-            flex: '1',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem'
-          }}>
-            <div style={{
-              aspectRatio: '1',
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '1rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '1rem',
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-            }}>
-              {generatedImage ? (
+          <div className="flex-1 flex flex-col gap-6">
+            <div className="aspect-square bg-white/5 rounded-2xl border border-white/10 flex justify-center items-center p-4 relative overflow-hidden shadow-2xl">
+              {isLoading && (
+                <CircularProgress
+                  size="lg"
+                  color="primary"
+                  aria-label="Loading..."
+                />
+              )}
+              {generatedImage && !isLoading && (
                 <img 
                   src={generatedImage} 
                   alt="Generated NFT" 
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    borderRadius: '0.8rem',
-                    position: 'relative',
-                    zIndex: 2
-                  }}
+                  className="w-full h-full object-contain rounded-xl"
                 />
-              ) : (
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  fontSize: '0.9rem',
-                  position: 'relative',
-                  zIndex: '2'
-                }}>
-                  {isLoading ? 'Generating image...' : 'Your generated image will appear here'}
-                </p>
               )}
-              {isLoading && (
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1rem',
-                  left: '1rem',
-                  right: '1rem',
-                  zIndex: 3
-                }}>
-                  <div style={{
-                    width: '100%',
-                    height: '4px',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    borderRadius: '2px',
-                    overflow: 'hidden'
-                  }}>
-                    <div 
-                      style={{
-                        width: '30%',
-                        height: '100%',
-                        backgroundColor: '#3b82f6',
-                        borderRadius: '2px',
-                        animation: 'loading 1.5s infinite',
-                        position: 'relative'
-                      }}
-                    />
-                  </div>
-                  <style jsx>{`
-                    @keyframes loading {
-                      0% {
-                        transform: translateX(-100%);
-                      }
-                      100% {
-                        transform: translateX(400%);
-                      }
-                    }
-                  `}</style>
-                </div>
+              {!generatedImage && !isLoading && (
+                <p className="text-white/50 text-sm">
+                  Your generated image will appear here
+                </p>
               )}
             </div>
           </div>
 
           {/* Right Side - Controls */}
-          <div style={{
-            flex: '1',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2rem'
-          }}>
+          <div className="flex-1 flex flex-col gap-8">
             {/* Prompt Input Section */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-            }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                marginBottom: '1.5rem',
-                background: 'linear-gradient(to right, #fff, rgba(255, 255, 255, 0.7))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text'
-              }}>Create Your NFT</h2>
+            <div className="bg-white/5 rounded-2xl p-8 border border-white/10 shadow-2xl">
+              <h2 className="text-2xl mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                Create Your NFT
+              </h2>
               
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem'
-              }}>
-                <div style={{
-                  position: 'relative'
-                }}>
+              <div className="flex flex-col gap-4">
+                <div className="relative">
                   <textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Describe your NFT idea..."
-                    style={{
-                      width: '100%',
-                      padding: '1rem',
-                      paddingRight: '3rem',
-                      background: 'rgba(0, 0, 0, 0.2)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '0.5rem',
-                      color: 'white',
-                      fontSize: '1rem',
-                      height: '275px',
-                      resize: 'none'
-                    }}
+                    className="w-full p-4 pr-12 bg-black/20 border border-white/10 rounded-lg text-white text-base h-[275px] resize-none"
                   />
                   <button 
                     onClick={handleGenerateImage}
                     disabled={isLoading}
-                    style={{
-                      position: 'absolute',
-                      bottom: '1rem',
-                      right: '1rem',
-                      background: 'linear-gradient(to right, #3b82f6, #2563eb)',
-                      border: 'none',
-                      borderRadius: '0.5rem',
-                      padding: '0.5rem',
-                      color: 'white',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '2rem',
-                      height: '2rem',
-                      transition: 'transform 0.2s ease',
-                      boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
-                      opacity: isLoading ? 0.7 : 1,
-                    }}
+                    className="absolute bottom-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 border-none rounded-lg p-2 text-white cursor-pointer flex items-center justify-center w-8 h-8 transition-transform hover:scale-105 shadow-blue-500/30 disabled:opacity-70"
                   >
                     {isLoading ? '...' : '→'}
                   </button>
@@ -432,88 +258,27 @@ export default function Home() {
             </div>
 
             {/* Minting Section */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '1rem',
-              padding: '2rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-            }}>
+            <div className="bg-white/5 rounded-2xl p-8 border border-white/10 shadow-2xl">
               <button 
                 onClick={() => setShowDashboard(true)}
                 disabled={!lucid || !address}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: !lucid || !address 
-                    ? 'rgba(147, 51, 234, 0.3)' 
-                    : 'linear-gradient(to right, #9333ea, #6366f1)',
-                  border: 'none',
-                  borderRadius: '0.5rem',
-                  color: 'white',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: !lucid || !address ? 'not-allowed' : 'pointer',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem'
-                }}
+                className={`w-full p-4 ${
+                  !lucid || !address 
+                    ? 'bg-purple-600/30' 
+                    : 'bg-gradient-to-r from-purple-600 to-indigo-500'
+                } border-none rounded-lg text-white text-base font-semibold cursor-pointer transition-all hover:transform hover:scale-[1.02] hover:shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:hover:transform-none`}
               >
                 {!lucid || !address ? 'Connect Wallet to Mint' : 'MINT as NFT'}
               </button>
 
               {/* Modal Overlay */}
               {showDashboard && (
-                <div style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  zIndex: 1000
-                }}>
+                <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
                   {/* Modal Content */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #1a1a1a, #2d2d2d)',
-                    padding: '2rem',
-                    borderRadius: '1rem',
-                    width: '90%',
-                    maxWidth: '500px',
-                    position: 'relative',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-                    overflowX: 'hidden',
-                    overflowY: 'auto',
-                    wordBreak: 'break-word',
-                    wordWrap: 'break-word'
-                  }}>
+                  <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl w-[90%] max-w-[500px] relative border border-white/10 shadow-2xl overflow-x-hidden overflow-y-auto break-words">
                     <button
                       onClick={() => setShowDashboard(false)}
-                      style={{
-                        position: 'absolute',
-                        top: '1rem',
-                        right: '1rem',
-                        background: 'none',
-                        border: 'none',
-                        color: 'white',
-                        fontSize: '1.5rem',
-                        cursor: 'pointer',
-                        padding: '0.5rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '2rem',
-                        height: '2rem',
-                        borderRadius: '50%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                      }}
+                      className="absolute top-4 right-4 bg-none border-none text-white text-2xl cursor-pointer p-2 flex items-center justify-center w-8 h-8 rounded-full bg-white/10"
                     >
                       ×
                     </button>
@@ -527,14 +292,7 @@ export default function Home() {
                       />
                     )}
                     {result && (
-                      <div style={{
-                        marginTop: '1rem',
-                        padding: '1rem',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        borderRadius: '0.5rem',
-                        fontSize: '0.9rem',
-                        color: 'rgba(255, 255, 255, 0.8)'
-                      }}>
+                      <div className="mt-4 p-4 bg-white/5 rounded-lg text-sm text-white/80">
                         {result}
                       </div>
                     )}

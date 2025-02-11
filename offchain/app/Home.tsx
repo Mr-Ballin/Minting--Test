@@ -1,55 +1,8 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-const HexagonGroup = ({ position, rotation = 0, scale = 1 }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right', rotation?: number, scale?: number }) => {
-    const getPosition = () => {
-        switch (position) {
-            case 'top-left':
-                return { top: '-100px', left: '-100px' };
-            case 'top-right':
-                return { top: '-100px', right: '-100px' };
-            case 'bottom-left':
-                return { bottom: '-100px', left: '-100px' };
-            case 'bottom-right':
-                return { bottom: '-100px', right: '-100px' };
-        }
-    };
-
-    return (
-        <>
-            <style jsx>{`
-                .hexagon-group {
-                    opacity: 0.5;
-                    transition: opacity 0.3s ease;
-                }
-                .hexagon-group:hover {
-                    opacity: 0.7;
-                }
-            `}</style>
-            <div className="hexagon-group" style={{
-                position: 'absolute',
-                ...getPosition(),
-                transform: `rotate(${rotation}deg) scale(${scale})`,
-                zIndex: 1
-            }}>
-                <div style={{ position: 'relative', width: '400px', height: '400px' }}>
-                    <Image
-                        src="/Hexagon Image.png"
-                        alt="Hexagon Group"
-                        fill
-                        style={{ objectFit: 'contain' }}
-                        priority
-                    />
-                </div>
-            </div>
-        </>
-    );
-};
 
 export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
@@ -98,12 +51,6 @@ export default function Home() {
             top: 0,
             left: 0
         }}>
-            {/* Hexagon Groups */}
-            <HexagonGroup position="top-left" rotation={0} scale={0.8} />
-            <HexagonGroup position="top-right" rotation={90} scale={0.8} />
-            <HexagonGroup position="bottom-left" rotation={270} scale={0.8} />
-            <HexagonGroup position="bottom-right" rotation={180} scale={0.8} />
-
             <div className="text-center">
                 <div style={{
                     marginBottom: '2rem',
@@ -204,17 +151,21 @@ export default function Home() {
                         <div style={{ width: '300px' }}>
                             <div style={{
                                 width: '100%',
-                                height: '4px',
+                                height: '20px',
                                 backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                                borderRadius: '2px',
-                                overflow: 'hidden'
+                                borderRadius: '10px',
+                                overflow: 'hidden',
+                                position: 'relative'
                             }}>
                                 <div style={{
                                     width: `${progress}%`,
                                     height: '100%',
                                     backgroundColor: '#3b82f6',
-                                    borderRadius: '2px',
-                                    transition: 'width 0.3s ease-in-out'
+                                    transition: 'width 0.3s ease-in-out',
+                                    borderRadius: '10px',
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0
                                 }} />
                             </div>
                             <div style={{
@@ -223,7 +174,7 @@ export default function Home() {
                                 marginTop: '0.5rem',
                                 color: '#3b82f6'
                             }}>
-                                Loading MINTSPEND page... {progress}%
+                                Compiling MINTSPEND page... {progress}%
                             </div>
                         </div>
                     )}
@@ -260,5 +211,5 @@ export default function Home() {
                 </div>
             </div>
         </div>
-    );
+    )
 }
