@@ -1,113 +1,11 @@
-use aiken/cbor
-use aiken/collection/dict
 use aiken/collection/list
 use aiken/crypto.{VerificationKeyHash}
-use aiken/option
 use aiken/primitive/bytearray
 use cardano/address.{Script}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{InlineDatum, Input, OutputReference, Transaction}
-use modules/functions.{filter_map_script_inputs}
 use modules/types.{Cip68}
 use modules/value
-
-validator check_datum {
-  spend(
-    datum: Option<Int>,
-    _redeemer: Void,
-    _o_ref: OutputReference,
-    _tx: Transaction,
-  ) {
-    // one way to deal with Option is by using when-is to extract its value
-    when datum is {
-      Some(i) -> (i == 42)?
-      None -> fail @"No Datum"
-    }
-  }
-
-  else(_) {
-    fail
-  }
-}
-
-validator check_redeemer {
-  spend(
-    datum: Option<ByteArray>,
-    redeemer: ByteArray,
-    _o_ref: OutputReference,
-    _tx: Transaction,
-  ) {
-    // another way is by using aiken/option.{or_else} by providing a fallback/default value
-    let hash = datum |> option.or_else("")
-    (crypto.sha2_256(redeemer) == hash)?
-  }
-
-  else(_) {
-    fail
-  }
-}
-
-validator sc_wallet(pkh: VerificationKeyHash) {
-  spend(
-    _datum: Option<Data>,
-    _redeemer: Void,
-    _o_ref: OutputReference,
-    tx: Transaction,
-  ) {
-    // allow spending whenever the transaction is signed only by the PKH as specified in the script param
-    ([pkh] == tx.extra_signatories)?
-  }
-
-  else(_) {
-    fail
-  }
-}
-
-validator receipts(pkh: VerificationKeyHash) {
-  /// Receipts:
-  /// https://aiken-lang.org/fundamentals/common-design-patterns#receipts
-  mint(_redeemer: Void, policy_id: PolicyId, tx: Transaction) {
-    // transaction level validation
-    expect [pkh] == tx.extra_signatories
-
-    // must spend something from the contract address
-    let script_inputs_o_ref_list = {
-      let input <- filter_map_script_inputs(tx.inputs, policy_id)
-      input.output_reference
-    }
-    expect [] != script_inputs_o_ref_list
-
-    // must mint 1 receipt-NFT with the expected asset-name
-    when tx.mint |> assets.tokens(policy_id) |> dict.to_pairs() is {
-      [Pair(asset_name, 1)] ->
-        asset_name == (
-          script_inputs_o_ref_list
-            |> cbor.serialise
-            |> crypto.blake2b_256
-        )
-      _ -> fail @"Invalid Mint"
-    }
-  }
-
-  /// Transaction Level Validation via Minting Policies:
-  /// https://github.com/Anastasia-Labs/design-patterns/blob/main/transaction-level-validator-minting-policy/TRANSACTION-LEVEL-VALIDATION-MINTING-POLICY.md#transaction-level-validation-via-minting-policies
-  spend(
-    _datum: Option<Data>,
-    _redeemer: Void,
-    o_ref: OutputReference,
-    tx: Transaction,
-  ) {
-    // delegate the validations to the minting script, which will only be executed once for the entire transaction
-    expect Some(input) = tx.inputs |> transaction.find_input(o_ref)
-    expect Script(policy_id) = input.output.address.payment_credential
-
-    (assets.policies(tx.mint) == [policy_id])?
-  }
-
-  else(_) {
-    fail
-  }
-}
 
 /// Fee validator to ensure 5 ADA payment
 validator fee_validator(fee_wallet: VerificationKeyHash) {
@@ -154,7 +52,36 @@ validator cip_68 {
     expect [ref_token_utxo] =
       tx.outputs |> transaction.find_script_outputs(policy_id)
     expect InlineDatum(metadata) = ref_token_utxo.datum
-    expect _: Cip68 = metadata
+    expect cip68_data: Cip68 = metadata
+
+    // Check if a token with this image URL already exists
+    expect False = {
+      let existing_utxos =
+        tx.reference_inputs |> list.map(fn(input) { input.output })
+      list.any(
+        existing_utxos,
+        fn(utxo) {
+          when utxo.datum is {
+            InlineDatum(existing_metadata) -> {
+              expect existing_cip68: Cip68 = existing_metadata
+              expect Some(Pair(_, existing_image)) =
+                list.find(
+                  existing_cip68.metadata,
+                  fn(pair) { pair.1st == #"696d616765" },
+                )
+              expect Some(Pair(_, new_image)) =
+                list.find(
+                  cip68_data.metadata,
+                  fn(pair) { pair.1st == #"696d616765" },
+                )
+              existing_image == new_image
+            }
+            _ -> False
+          }
+        },
+      )
+    }
+
     expect 1 =
       ref_token_utxo.value |> assets.quantity_of(policy_id, ref_token_name)
 
